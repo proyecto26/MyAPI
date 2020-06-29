@@ -15,7 +15,8 @@ import {
   Inject,
   LoggerService,
   Body,
-  ParseIntPipe
+  ParseIntPipe,
+  ParseArrayPipe
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -223,6 +224,35 @@ export class UserController {
     } catch (error) {
       this.logger.error(error.message, 'UPDATE_PASSWORD')
       throw new BadRequestException(error.message)
+    }
+  }
+
+  @ApiOperation({ summary: 'Add new users' })
+  @ApiBody({ type: User, isArray: true, description: 'Info of the users' })
+  @ApiCreatedResponse({ description: 'The users were created successfully' })
+  @ApiBadRequestResponse({ description: 'The users could not be created' })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
+  @Post('bulk')
+  @HttpCode(HttpStatus.CREATED)
+  async createBulk(
+    @Body(new ParseArrayPipe({ items: User })) users: User[]
+  ): Promise<void> {
+    try {
+      await this.userService.addUsers(users)
+    } catch (error) {
+      /**
+       * Validate database exceptions
+       */
+      switch(error.code) {
+        case POSTGRES.UNIQUE_VIOLATION:
+          throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
+        default:
+          this.logger.error(error.message, 'ADD_USERS')
+          throw new BadRequestException(error.message)
+      }
     }
   }
 }

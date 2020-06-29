@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { Repository, QueryRunner } from 'typeorm'
 import { get } from 'lodash'
 
 import { User, IUser } from '../../models/user'
@@ -80,7 +80,10 @@ export class UserService {
     return rawData[0]
   }
 
-  async addUser(user: IUser): Promise<void> {
+  async addUser(
+    user: IUser,
+    queryRunner: QueryRunner = this.repository.queryRunner
+  ): Promise<void> {
     const currentDate = new Date().toISOString()
     const newUser = this.preloadUser(user)
     const parameters = [
@@ -99,7 +102,7 @@ export class UserService {
       currentDate,
       currentDate
     ]
-    await this.repository.query(
+    await queryRunner.query(
       `INSERT INTO ${PUBLIC_TABLES.USER} (
         "id",
         "email",
@@ -187,5 +190,22 @@ export class UserService {
       [documentTypeId]
     )
     return Number(rawData[0].count)
+  }
+
+  async addUsers(users: IUser[]): Promise<void> {
+    const queryRunner = this.repository.manager.connection.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+    try {
+      for (const user of users) {
+        await this.addUser(user, queryRunner)
+      }
+      await queryRunner.commitTransaction()
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      throw error
+    } finally {
+      await queryRunner.release()
+    }
   }
 }

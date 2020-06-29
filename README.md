@@ -48,7 +48,7 @@ $ yarn test:cov
 ```
 
 ## Credits 👍
-* **Nest framework TypeScript starter repository:** [A progressive Node.js framework for building efficient and scalable server-side applications.](https://github.com/nestjs/typescript-starter)
+* **typescript-starter:** [Nest framework TypeScript starter repository](https://github.com/nestjs/typescript-starter).
 
 ## Supporting 🍻
 I believe in Unicorns 🦄
