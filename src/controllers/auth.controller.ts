@@ -33,24 +33,23 @@ export class AuthController {
   @ApiBearerAuth()
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Validar token de autenticación' })
-  @ApiOkResponse({ description: 'El token de autenticación es válido' })
-  @ApiUnauthorizedResponse({ description: 'El token de autenticación no es válido' })
+  @ApiOperation({ summary: 'Validate authentication token' })
+  @ApiOkResponse({ description: 'Authentication token is valid' })
+  @ApiUnauthorizedResponse({ description: 'The authentication token is invalid' })
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   isAuthenticated(): void { }
 
   @UseGuards(AuthGuard('local'))
   @Post()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiOperation({ summary: 'Authenticate user' })
   @ApiBody({ description: 'User credentials', type: AuthLogin })
-  @ApiOkResponse({ description: 'Token de autenticación', type: AuthToken })
-  @ApiUnauthorizedResponse({ description: 'El documento o contraseña ingresados no son válidos' })
-  @ApiForbiddenResponse({ description: 'No cuenta con el rol necesario para realizar esta acción' })
+  @ApiOkResponse({ description: 'Authentication token', type: AuthToken })
+  @ApiUnauthorizedResponse({ description: 'The document or password entered are not valid' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   authenticate(
     @Request() request: { user: User }
   ): Promise<AuthToken> {
-    console.log(request.user)
     return this.authService.getAccessToken(request.user)
   }
 }
