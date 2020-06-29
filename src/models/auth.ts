@@ -34,7 +34,12 @@ export class AuthLogin {
     type: String,
     required: true
   })
-  @IsNumberString()
+  @IsNumberString(null, {
+    message: 'Document must be a number'
+  })
+  @IsNotEmpty({
+    message: 'Document is required'
+  })
   readonly document: string
 
   @ApiProperty({
@@ -46,6 +51,8 @@ export class AuthLogin {
   @Length(8, null, {
     message: 'Password length must be at least 8 digits'
   })
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: 'Password is required'
+  })
   readonly password: string
 }

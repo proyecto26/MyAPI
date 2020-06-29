@@ -83,7 +83,7 @@ export class User implements IUser {
   @ApiProperty({ description: 'Email' })
   @Column('varchar', { length: 50 })
   @Index('IDX_USER_EMAIL', { unique: true })
-  @IsEmail({}, {
+  @IsEmail(null, {
     message: 'The email is not valid'
   })
   @IsNotEmpty({
@@ -103,10 +103,6 @@ export class User implements IUser {
   @Column('boolean', { default: false })
   termsAndConditions?: boolean
 
-  @ApiProperty({ description: 'Role associated with the user' })
-  @ManyToOne(() => Role, role => role.users)
-  role: Role
-
   @ApiProperty({ description: 'Status' })
   @Column('text', { default: UserStatus.Inactive })
   @IsNotEmpty({
@@ -119,12 +115,22 @@ export class User implements IUser {
 
   @UpdateDateColumn({ type: 'timestamp without time zone' })
   updateDate: Date
+
+  @ApiProperty({ description: 'Role associated with the user' })
+  @ManyToOne(() => Role, role => role.users)
+  role: Role
 }
 
 export class UserPasswords {
   @ApiProperty({ description: 'User password' })
+  @IsNotEmpty({
+    message: 'The password is required'
+  })
   password: string
 
   @ApiProperty({ description: 'Repeat user password' })
+  @IsNotEmpty({
+    message: 'Repeat password is required'
+  })
   repeatPassword: string
 }
