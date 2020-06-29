@@ -49,7 +49,7 @@ export class UserController {
     @Inject(Logger) private readonly logger: LoggerService
   ) { }
 
-  private async getUserByDocument(userId): Promise<User> {
+  private async getUserByDocument(userId: string): Promise<User> {
     const user = await this.userService.findByDocument(userId)
     delete user.password
     return user

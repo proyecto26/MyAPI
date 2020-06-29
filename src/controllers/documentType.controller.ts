@@ -3,7 +3,6 @@ import {
   HttpCode,
   HttpStatus,
   Get,
-  Request,
   UseGuards,
   Post,
   BadRequestException,
@@ -24,7 +23,6 @@ import {
   ApiBadRequestResponse
 } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport'
-import { Request as RequestBody } from 'express'
 
 import { DefaultRole } from '../models/role'
 import { DocumentType } from '../models/documentType'
