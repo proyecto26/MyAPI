@@ -40,7 +40,7 @@ const connectionOptions: ConnectionOptions = {
     join(__dirname, 'migrations/*{.ts,.js}')
   ],
   cli: {
-    migrationsDir: './migrations'
+    migrationsDir: 'src/database/migrations'
   }
 }
 
