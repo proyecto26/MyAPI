@@ -8,6 +8,7 @@ import { createLogger } from './logger'
 import { setupSwagger } from './swagger'
 import { setupSecurity } from './security'
 import { PROD_ENV } from './constants'
+import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -24,6 +25,13 @@ async function bootstrap() {
   app.use(json({
     limit: '10mb'
   }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true
+    })
+  )
 
   // SECURITY
   setupSecurity(app)

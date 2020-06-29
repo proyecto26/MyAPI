@@ -13,7 +13,8 @@ import {
   ParseIntPipe,
   Inject,
   Logger,
-  LoggerService
+  LoggerService,
+  Body
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -25,9 +26,11 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { Request as RequestBody } from 'express'
 
+import { DefaultRole } from '../models/role'
 import { DocumentType } from '../models/documentType'
 import { DocumentTypeService, UserService } from '../repositories'
 import { ERRORS } from '../constants'
+import { RolesGuard, Roles } from '../auth'
 
 @ApiTags('Document Types')
 @Controller('/api/documentTypes')
@@ -46,18 +49,22 @@ export class DocumentTypeController {
     return this.documentTypeService.getAll()
   }
 
-  @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create document type' })
   @ApiOkResponse({ description: 'The document type has been created successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be created' })
+  @UseGuards(AuthGuard())
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Post()
   @HttpCode(HttpStatus.OK)
   async addDocumentType(
-    @Request() req: RequestBody,
+    @Body() documentType: DocumentType,
   ): Promise<void> {
     try {
-      await this.documentTypeService.insert(req.body)
+      await this.documentTypeService.insert(documentType)
     } catch (error) {
       switch (error.code) {
         default:
@@ -67,18 +74,22 @@ export class DocumentTypeController {
     }
   }
 
-  @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update document type' })
   @ApiOkResponse({ description: 'The document type has been updated successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be updated' })
+  @UseGuards(AuthGuard())
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Put()
   @HttpCode(HttpStatus.OK)
   updateDocumentType(
-    @Request() req: RequestBody,
+    @Body() documentType: DocumentType,
   ): Promise<void> {
     try {
-      return this.documentTypeService.upsert(req.body)
+      return this.documentTypeService.upsert(documentType)
     } catch (error) {
       switch (error.code) {
         default:
@@ -88,15 +99,19 @@ export class DocumentTypeController {
     }
   }
 
-  @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete document type' })
   @ApiOkResponse({ description: 'The document type has been deleted successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be deleted' })
+  @UseGuards(AuthGuard())
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async deleteDocumentType(
-    @Param('id', new ParseIntPipe()) id: number
+    @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
     if (await this.userService.countByDocumentTypeId(id) > 0) {
       throw new BadRequestException(ERRORS.USER_HAS_DOCUMENT_TYPE)

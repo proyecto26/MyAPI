@@ -29,24 +29,24 @@ export class AuthController {
     private readonly authService: AuthService
   ) { }
 
+  @ApiOperation({ summary: 'Validate authentication token' })
+  @ApiOkResponse({ description: 'Authentication token is valid' })
+  @ApiUnauthorizedResponse({ description: 'The authentication token is invalid' })
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Validate authentication token' })
-  @ApiOkResponse({ description: 'Authentication token is valid' })
-  @ApiUnauthorizedResponse({ description: 'The authentication token is invalid' })
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   isAuthenticated(): void { }
 
-  @UseGuards(AuthGuard('local'))
-  @Post()
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate user' })
   @ApiBody({ description: 'User credentials', type: AuthLogin })
   @ApiOkResponse({ description: 'Authentication token', type: AuthToken })
   @ApiUnauthorizedResponse({ description: 'The document or password entered are not valid' })
   @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
+  @UseGuards(AuthGuard('local'))
+  @Post()
+  @HttpCode(HttpStatus.OK)
   authenticate(
     @Request() request: { user: User }
   ): Promise<AuthToken> {

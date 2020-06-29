@@ -13,7 +13,9 @@ import {
   Query,
   Logger,
   Inject,
-  LoggerService
+  LoggerService,
+  Body,
+  ParseIntPipe
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -28,25 +30,30 @@ import {
 } from '@nestjs/swagger'
 import { Request as RequestBody } from 'express'
 import { AuthGuard } from '@nestjs/passport'
-import { validate } from 'class-validator'
-import { values, merge, isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { ERRORS, POSTGRES } from '../constants'
 import { UserService } from '../repositories'
 import { User, UserPasswords } from '../models/user'
 import { DefaultRole, Role } from '../models/role'
 import { AuthPayload } from '../models/auth'
-import { encryptPassword }  from '../auth/utils'
+import { encryptPassword, RolesGuard, Roles }  from '../auth'
 
-@UseGuards(AuthGuard())
 @ApiBearerAuth()
 @ApiTags('Users')
+@UseGuards(AuthGuard())
 @Controller('/api/users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     @Inject(Logger) private readonly logger: LoggerService
   ) { }
+
+  private async getUserByDocument(userId): Promise<User> {
+    const user = await this.userService.findByDocument(userId)
+    delete user.password
+    return user
+  }
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({ description: 'List of users', type: User, isArray: true })
@@ -66,11 +73,16 @@ export class UserController {
     required: false,
     type: Number
   })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAll(
     @Query('search') search?: string,
-    @Query('offset') offset?: number,
-    @Query('limit') limit?: number
+    @Query('offset', ParseIntPipe) offset?: number,
+    @Query('limit', ParseIntPipe) limit?: number
   ): Promise<Array<User>> {
     const users = await this.userService.findByRoleIds(
       [DefaultRole.User],
@@ -79,12 +91,6 @@ export class UserController {
       limit
     )
     return users
-  }
-
-  private async getUserByDocument(userId): Promise<User> {
-    const user = await this.userService.findByDocument(userId)
-    delete user.password
-    return user
   }
 
   @ApiOperation({ summary: 'Get the info of the current user' })
@@ -105,6 +111,10 @@ export class UserController {
     type: User,
     description: 'User information'
   })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Get(':document')
   @HttpCode(HttpStatus.OK)
   async findByDocument(
@@ -117,18 +127,16 @@ export class UserController {
   @ApiBody({ type: User, description: 'User information' })
   @ApiCreatedResponse({ description: 'The user was created successfully' })
   @ApiBadRequestResponse({ description: 'The user could not be created' })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addUser(@Request() req: RequestBody): Promise<void> {
+  async addUser(
+    @Body() user: User
+  ): Promise<void> {
     try {
-      /**
-       * Validate the body of the request
-       */
-      const user = merge<User, User>(new User(), req.body)
-      const errors = await validate(user)
-      if (errors.length) {
-        throw new Error(values(errors[0].constraints)[0])
-      }
       user.role = new Role(DefaultRole.User)
       await this.userService.addUser(user)
     } catch (error) {
@@ -149,21 +157,16 @@ export class UserController {
   @ApiBody({ type: User, description: 'User information' })
   @ApiOkResponse({ description: 'The user was updated successfully' })
   @ApiBadRequestResponse({ description: 'The user could not be updated' })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Put()
   @HttpCode(HttpStatus.OK)
   async updateUser(
-    @Request() req: RequestBody
+    @Body() user: User
   ): Promise<void> {
     try {
-      /**
-       * Validate the body of the request
-       */
-      const user = merge<User, User>(new User(), req.body)
-      const errors = await validate(user)
-      if (errors.length) {
-        throw new Error(values(errors[0].constraints)[0])
-      }
-
       await this.userService.updateUser(user)
     } catch (error) {
       /**
@@ -182,6 +185,10 @@ export class UserController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiOkResponse({ description: 'User deleted' })
   @ApiBadRequestResponse({ description: 'The user could not be deleted' })
+  @UseGuards(RolesGuard)
+  @Roles(
+    DefaultRole.Admin
+  )
   @Delete(':document')
   @HttpCode(HttpStatus.OK)
   async delete(

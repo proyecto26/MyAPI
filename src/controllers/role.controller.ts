@@ -1,6 +1,5 @@
 import {
   Controller,
-  Request,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -13,7 +12,8 @@ import {
   ParseIntPipe,
   Inject,
   Logger,
-  LoggerService
+  LoggerService,
+  Body
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import {
@@ -26,17 +26,19 @@ import {
   ApiCreatedResponse,
   ApiBadRequestResponse
 } from '@nestjs/swagger'
-import { validate } from 'class-validator'
-import { merge, values } from 'lodash'
-import { Request as RequestExpress } from 'express'
 
 import { ERRORS, POSTGRES } from '../constants'
 import { RoleService } from '../repositories'
 import { Role, DefaultRole } from '../models/role'
+import { Roles, RolesGuard } from '../auth'
 
 @ApiBearerAuth()
-@ApiTags( 'Roles' )
+@ApiTags('Roles')
 @UseGuards(AuthGuard())
+@UseGuards(RolesGuard)
+@Roles(
+  DefaultRole.Admin
+)
 @Controller('/api/roles')
 export class RoleController {
   constructor(
@@ -59,17 +61,10 @@ export class RoleController {
   @ApiBadRequestResponse({ description: 'The role could not be created' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async addRole(@Request() req: RequestExpress): Promise<void> {
+  async addRole(
+    @Body() role: Role
+  ): Promise<void> {
     try {
-      /**
-       * Validate the body of the request
-       */
-      const role = merge<Role, Role>(new Role(), req.body)
-      const errors = await validate(role)
-      if (errors.length) {
-        throw new Error(values(errors[0].constraints)[0])
-      }
-
       await this.roleService.addRole(role)
     } catch (error) {
       /**
@@ -91,17 +86,10 @@ export class RoleController {
   @ApiBadRequestResponse({ description: 'The role could not be updated' })
   @Put()
   @HttpCode(HttpStatus.OK)
-  async updateRole(@Request() req: RequestExpress): Promise<void> {
+  async updateRole(
+    @Body() role: Role
+  ): Promise<void> {
     try {
-      /**
-       * Validate the body of the request
-       */
-      const role = merge<Role, Role>(new Role(), req.body)
-      const errors = await validate(role)
-      if (errors.length) {
-        throw new Error(values(errors[0].constraints)[0])
-      }
-
       await this.roleService.updateRole(role)
     } catch (error) {
       /**
@@ -123,7 +111,7 @@ export class RoleController {
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('id', new ParseIntPipe()) id: number
+    @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
     if (id === DefaultRole.User) {
       throw new BadRequestException(ERRORS.ROLE_USER_DELETION)
