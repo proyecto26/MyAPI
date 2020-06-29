@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core'
+import { ValidationPipe } from '@nestjs/common'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { json, urlencoded } from 'body-parser'
 import { join } from 'path'
@@ -8,7 +9,6 @@ import { createLogger } from './logger'
 import { setupSwagger } from './swagger'
 import { setupSecurity } from './security'
 import { PROD_ENV } from './constants'
-import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
