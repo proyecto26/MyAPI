@@ -54,12 +54,6 @@ export class UserController {
     @Inject(Logger) private readonly logger: LoggerService
   ) { }
 
-  private async getUserByDocument(userId: string): Promise<User> {
-    const user = await this.userService.findByDocument(userId)
-    if (user) delete user.password
-    return user
-  }
-
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({ description: 'List of users', type: User, isArray: true })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
@@ -100,7 +94,7 @@ export class UserController {
     ) limit: number
   ): Promise<Array<User>> {
     const users = await this.userService.findByRoleIds(
-      [DefaultRole.User],
+      [DefaultRole.Admin, DefaultRole.User],
       search,
       offset,
       limit
@@ -118,7 +112,7 @@ export class UserController {
   async getProfile(
     @Request() req: { user: AuthPayload }
   ): Promise<User> {
-    return this.getUserByDocument(req.user.sub)
+    return this.userService.findByDocument(req.user.sub)
   }
 
   @ApiOperation({ summary: 'Get the info of a user by document' })
@@ -135,7 +129,7 @@ export class UserController {
   async findByDocument(
     @Param('document') document: string
   ): Promise<User> {
-    const user = await this.getUserByDocument(document)
+    const user = await this.userService.findByDocument(document)
     if (user) {
       return user
     } else {
