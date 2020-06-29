@@ -3,6 +3,7 @@ export default {
   UNIQUE_VIOLATION: 'Another record with the same identifier already exists',
 
   // USER CUSTOM ERRORS
+  USER_NOT_FOUND: 'A user with the identification document entered does not exist',
   USER_INVALID_PASSWORD: 'It is required to activate the account to be able to enter, please check your email to proceed with the activation',
   USER_INACTIVE: 'This account is inactive, please contact our call center at number (XX) XXX XX XX',
   USER_EMAIL_ALREADY_EXISTS: 'A user with the entered email already exists',

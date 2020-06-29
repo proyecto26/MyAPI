@@ -4,7 +4,7 @@ import { IsNotEmpty } from 'class-validator'
 
 import { User } from './user'
 
-@Entity()
+@Entity({ schema: 'public' })
 export class Role {
 
   constructor(id?: number) {

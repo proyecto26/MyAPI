@@ -30,7 +30,7 @@ export interface IUser {
   updateDate: Date
 }
 
-@Entity()
+@Entity({ schema: 'public' })
 export class User implements IUser {
   constructor (id?: string) {
     this.id = id
@@ -59,12 +59,6 @@ export class User implements IUser {
     message: 'Last name is required'
   })
   lastName: string
-
-  @ApiProperty({ description: 'Document type' })
-  @IsNotEmpty({
-    message: 'The type of document is required'
-  })
-  documentType: DocumentType
 
   @ApiProperty({ description: 'Birthday' })
   @Column({ type: 'timestamp without time zone' })
@@ -119,6 +113,13 @@ export class User implements IUser {
   @ApiProperty({ description: 'Role associated with the user' })
   @ManyToOne(() => Role, role => role.users)
   role: Role
+
+  @ApiProperty({ description: 'Document type associated with the user' })
+  @IsNotEmpty({
+    message: 'The type of document is required'
+  })
+  @ManyToOne(() => DocumentType, documentType => documentType.users)
+  documentType: DocumentType
 }
 
 export class UserPasswords {

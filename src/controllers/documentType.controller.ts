@@ -20,7 +20,8 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiBearerAuth,
-  ApiBadRequestResponse
+  ApiBadRequestResponse,
+  ApiForbiddenResponse
 } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport'
 
@@ -51,11 +52,9 @@ export class DocumentTypeController {
   @ApiOperation({ summary: 'Create document type' })
   @ApiOkResponse({ description: 'The document type has been created successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be created' })
-  @UseGuards(AuthGuard())
-  @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(DefaultRole.Admin)
   @Post()
   @HttpCode(HttpStatus.OK)
   async addDocumentType(
@@ -76,11 +75,9 @@ export class DocumentTypeController {
   @ApiOperation({ summary: 'Update document type' })
   @ApiOkResponse({ description: 'The document type has been updated successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be updated' })
-  @UseGuards(AuthGuard())
-  @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(DefaultRole.Admin)
   @Put()
   @HttpCode(HttpStatus.OK)
   updateDocumentType(
@@ -101,17 +98,16 @@ export class DocumentTypeController {
   @ApiOperation({ summary: 'Delete document type' })
   @ApiOkResponse({ description: 'The document type has been deleted successfully' })
   @ApiBadRequestResponse({ description: 'The document type could not be deleted' })
-  @UseGuards(AuthGuard())
-  @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(DefaultRole.Admin)
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async deleteDocumentType(
     @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
-    if (await this.userService.countByDocumentTypeId(id) > 0) {
+    const usersWithDocumentType = await this.userService.countByDocumentTypeId(id)
+    if (usersWithDocumentType > 0) {
       throw new BadRequestException(ERRORS.USER_HAS_DOCUMENT_TYPE)
     }
     try {

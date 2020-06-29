@@ -24,7 +24,8 @@ import {
   ApiInternalServerErrorResponse,
   ApiBody,
   ApiCreatedResponse,
-  ApiBadRequestResponse
+  ApiBadRequestResponse,
+  ApiForbiddenResponse
 } from '@nestjs/swagger'
 
 import { ERRORS, POSTGRES } from '../constants'
@@ -34,11 +35,8 @@ import { Roles, RolesGuard } from '../auth'
 
 @ApiBearerAuth()
 @ApiTags('Roles')
-@UseGuards(AuthGuard())
-@UseGuards(RolesGuard)
-@Roles(
-  DefaultRole.Admin
-)
+@UseGuards(AuthGuard(), RolesGuard)
+@Roles(DefaultRole.Admin)
 @Controller('/api/roles')
 export class RoleController {
   constructor(
@@ -49,6 +47,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Get the list of roles' })
   @ApiOkResponse({ description: 'Role list' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<Role[]> {
@@ -59,6 +58,7 @@ export class RoleController {
   @ApiBody({ type: Role, description: 'Role information' })
   @ApiCreatedResponse({ description: 'The role was created successfully' })
   @ApiBadRequestResponse({ description: 'The role could not be created' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async addRole(
@@ -84,6 +84,7 @@ export class RoleController {
   @ApiBody({ type: Role, description: 'Role information' })
   @ApiOkResponse({ description: 'The role was updated successfully' })
   @ApiBadRequestResponse({ description: 'The role could not be updated' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @Put()
   @HttpCode(HttpStatus.OK)
   async updateRole(
@@ -108,6 +109,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Delete a role' })
   @ApiOkResponse({ description: 'Role deleted' })
   @ApiBadRequestResponse({ description: 'The role could not be deleted' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async delete(

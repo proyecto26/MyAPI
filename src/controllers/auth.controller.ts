@@ -13,7 +13,6 @@ import {
   ApiOperation,
   ApiBody,
   ApiOkResponse,
-  ApiForbiddenResponse,
   ApiUnauthorizedResponse,
   ApiBearerAuth
 } from '@nestjs/swagger'
@@ -43,7 +42,6 @@ export class AuthController {
   @ApiBody({ description: 'User credentials', type: AuthLogin })
   @ApiOkResponse({ description: 'Authentication token', type: AuthToken })
   @ApiUnauthorizedResponse({ description: 'The document or password entered are not valid' })
-  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(AuthGuard('local'))
   @Post()
   @HttpCode(HttpStatus.OK)

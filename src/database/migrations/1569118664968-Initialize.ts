@@ -4,8 +4,10 @@ import {
   MigrationInterface
 } from 'typeorm'
 
-import { UserStatus } from '../../models/user'
-import { DefaultRole } from '../../models/role'
+import { UserStatus, User } from '../../models/user'
+import { DefaultRole, Role } from '../../models/role'
+import { DefaultDocumentType, DocumentType } from '../../models/documentType'
+import { encryptPassword } from '../../auth'
 import {
   PUBLIC_TABLES,
   COLUMN_TYPES,
@@ -61,7 +63,7 @@ export class Initialize1569118664968 implements MigrationInterface {
         { name: 'phoneNumber', type: COLUMN_TYPES.VARCHAR, length: '20', isNullable: true },
         { name: 'termsAndConditions', type: COLUMN_TYPES.BOOLEAN, default: false },
         { name: FOREIGN_KEYS.ROLE_ID, type: COLUMN_TYPES.INT },
-        { name: FOREIGN_KEYS.DOCUMENT_TYPE_ID, type: COLUMN_TYPES.INT, isNullable: true },
+        { name: FOREIGN_KEYS.DOCUMENT_TYPE_ID, type: COLUMN_TYPES.INT },
         ...createAndUpdateDates
       ],
       foreignKeys: [
@@ -73,26 +75,46 @@ export class Initialize1569118664968 implements MigrationInterface {
       ]
     }), true)
 
+    console.log('************** INSERT DEFAULT DATA **************')
+
     // INSERT DATA
-    await queryRunner.query(
-      `INSERT INTO ${PUBLIC_TABLES.ROLE} (id, name)
-      VALUES ($1, $2), ($3, $4);`, [
-      DefaultRole.User, 'User',
-      DefaultRole.Admin, 'Admin',
-    ])
+    const userRole = new Role(DefaultRole.User)
+    userRole.name = 'User'
+    await queryRunner.manager.save(userRole)
 
-    await queryRunner.query(
-      `INSERT INTO ${PUBLIC_TABLES.DOCUMENT_TYPE} (name)
-      VALUES ($1), ($2);`, [
-      'Citizenship card',
-      'Passport'
-    ])
+    const adminRole = new Role(DefaultRole.Admin)
+    adminRole.name = 'Admin'
+    await queryRunner.manager.save(adminRole)
 
-    console.log('************** PUBLIC SCHEMA CREATED **************')
+    const citizenshipCardDocumentType = new DocumentType(DefaultDocumentType.CitizenshipCard)
+    citizenshipCardDocumentType.name = 'Citizenship card'
+    await queryRunner.manager.save(citizenshipCardDocumentType)
+
+    const passportDocumentType = new DocumentType(DefaultDocumentType.Passport)
+    passportDocumentType.name = 'Passport'
+    console.log(await queryRunner.manager.save(passportDocumentType))
+
+    const encryptedPassword = await encryptPassword('1111')
+    const currentdate = new Date()
+    const user = new User('1234')
+    user.password = encryptedPassword
+    user.email = 'jdnichollsc@hotmail.com'
+    user.firstName = 'Juan David'
+    user.lastName = 'Nicholls Cardona'
+    user.address = 'XXX XX XX'
+    user.phoneNumber = 'XXX-XX-XX'
+    user.birthdate = currentdate.toISOString()
+    user.documentType = passportDocumentType
+    user.role = adminRole
+    user.termsAndConditions = true
+    user.status = UserStatus.Active
+    user.createDate = currentdate
+    user.updateDate = currentdate
+    await queryRunner.manager.save(user)
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    console.log('************** REVERT PUBLIC SCHEMA **************')
+    console.log('************** REMOVE PUBLIC SCHEMA **************')
 
     await queryRunner.dropTable(PUBLIC_TABLES.USER)
     await queryRunner.dropTable(PUBLIC_TABLES.DOCUMENT_TYPE)

@@ -16,7 +16,9 @@ import {
   LoggerService,
   Body,
   ParseIntPipe,
-  ParseArrayPipe
+  ParseArrayPipe,
+  DefaultValuePipe,
+  NotFoundException
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -27,7 +29,9 @@ import {
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
-  ApiQuery
+  ApiQuery,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse
 } from '@nestjs/swagger'
 import { Request as RequestBody } from 'express'
 import { AuthGuard } from '@nestjs/passport'
@@ -52,13 +56,14 @@ export class UserController {
 
   private async getUserByDocument(userId: string): Promise<User> {
     const user = await this.userService.findByDocument(userId)
-    delete user.password
+    if (user) delete user.password
     return user
   }
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({ description: 'List of users', type: User, isArray: true })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @ApiQuery({
     name: 'search',
     required: false,
@@ -75,15 +80,24 @@ export class UserController {
     type: Number
   })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Query('search') search?: string,
-    @Query('offset', ParseIntPipe) offset?: number,
-    @Query('limit', ParseIntPipe) limit?: number
+    @Query(
+      'search',
+      new DefaultValuePipe('')
+    ) search: string,
+    @Query(
+      'offset',
+      new DefaultValuePipe(0),
+      ParseIntPipe
+    ) offset: number,
+    @Query(
+      'limit',
+      new DefaultValuePipe(10),
+      ParseIntPipe
+    ) limit: number
   ): Promise<Array<User>> {
     const users = await this.userService.findByRoleIds(
       [DefaultRole.User],
@@ -108,30 +122,34 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get the info of a user by document' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @ApiOkResponse({
     type: User,
     description: 'User information'
   })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Get(':document')
   @HttpCode(HttpStatus.OK)
   async findByDocument(
     @Param('document') document: string
   ): Promise<User> {
-    return this.getUserByDocument(document)
+    const user = await this.getUserByDocument(document)
+    if (user) {
+      return user
+    } else {
+      throw new NotFoundException(ERRORS.USER_NOT_FOUND)
+    }
   }
 
   @ApiOperation({ summary: 'Create a user' })
   @ApiBody({ type: User, description: 'User information' })
   @ApiCreatedResponse({ description: 'The user was created successfully' })
   @ApiBadRequestResponse({ description: 'The user could not be created' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async addUser(
@@ -158,10 +176,9 @@ export class UserController {
   @ApiBody({ type: User, description: 'User information' })
   @ApiOkResponse({ description: 'The user was updated successfully' })
   @ApiBadRequestResponse({ description: 'The user could not be updated' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Put()
   @HttpCode(HttpStatus.OK)
   async updateUser(
@@ -186,10 +203,9 @@ export class UserController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiOkResponse({ description: 'User deleted' })
   @ApiBadRequestResponse({ description: 'The user could not be deleted' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Delete(':document')
   @HttpCode(HttpStatus.OK)
   async delete(
@@ -231,10 +247,9 @@ export class UserController {
   @ApiBody({ type: User, isArray: true, description: 'Info of the users' })
   @ApiCreatedResponse({ description: 'The users were created successfully' })
   @ApiBadRequestResponse({ description: 'The users could not be created' })
+  @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(RolesGuard)
-  @Roles(
-    DefaultRole.Admin
-  )
+  @Roles(DefaultRole.Admin)
   @Post('bulk')
   @HttpCode(HttpStatus.CREATED)
   async createBulk(

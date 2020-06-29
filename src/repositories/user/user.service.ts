@@ -35,9 +35,9 @@ export class UserService {
 
   async findByRoleIds(
     roles: number[],
-    search = '',
-    offset = 0,
-    limit = 10
+    search: string,
+    offset: number,
+    limit: number
   ): Promise<IUser[]> {
     return this.repository.query(
       `SELECT u.*,
@@ -77,7 +77,7 @@ export class UserService {
         WHERE u.id=$1;`,
       [ document ]
     )
-    return rawData[0]
+    return rawData?.[0]
   }
 
   async addUser(

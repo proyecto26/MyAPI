@@ -11,7 +11,7 @@ export function setupSwagger (app: INestApplication): void {
     .setVersion('1.0')
     .addTag('Endpoints')
     .setContact('', '', 'your_contact@mail.com')
-    .addBearerAuth({ type: 'apiKey' })
+    .addBearerAuth()
     .addServer(`${url}://`)
     .build()
   const document = SwaggerModule.createDocument(app, options)
