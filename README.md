@@ -5,6 +5,7 @@
 ## Installation 📚
 
 ```bash
+# install dependencies
 $ yarn
 ```
 
