@@ -15,10 +15,10 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number
 
+  @ApiProperty({ description: 'Name of the role' })
   @IsNotEmpty({
     message: 'The name is required'
   })
-  @ApiProperty({ description: 'Name of the role' })
   @Column({ length: 50, type: 'varchar' })
   name: string
 

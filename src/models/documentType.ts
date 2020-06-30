@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 import { IsNotEmpty } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 import { User } from './user'
 
@@ -10,9 +11,11 @@ export class DocumentType {
     this.id = id
   }
 
+  @ApiProperty({ description: 'Id of the document type', required: false })
   @PrimaryGeneratedColumn()
   id: number
 
+  @ApiProperty({ description: 'Name of the document type' })
   @IsNotEmpty({
     message: 'The name is required'
   })
