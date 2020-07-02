@@ -6,7 +6,7 @@
 | - | ------------ |
 | ⚡️ | **Launch your api instantly** watching changes with live-reload |
 | 📈 | **Highly scalable** using [Repository design pattern](https://docs.nestjs.com/techniques/database#repository-pattern) to access the database even easier |
-| 😎 | **OpenAPI** having [Swagger](https://docs.nestjs.com/openapi/introduction) configured to describe your RESTful APIs |
+| 😎 | **OpenAPI** with [Swagger](https://docs.nestjs.com/openapi/introduction) to describe your RESTful APIs |
 | ✨ | **KISS principle** make everything as simple as possible, but not simpler! |
 | 📱 | **Security** supporting Cross-origin resource sharing (CORS) for a list of domains |
 | ⏱ | Don't repeat yourself. Single responsibility principle. |
