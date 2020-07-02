@@ -7,10 +7,12 @@
 | ⚡️ | **Launch your api instantly** watching changes with live-reload |
 | 📈 | **Highly scalable** using [Repository design pattern](https://docs.nestjs.com/techniques/database#repository-pattern) to access the database even easier |
 | 😎 | **OpenAPI** with [Swagger](https://docs.nestjs.com/openapi/introduction) to describe your RESTful APIs |
-| ✨ | **KISS principle** make everything as simple as possible, but not simpler! |
-| 📱 | **Security** supporting Cross-origin resource sharing (CORS) for a list of domains |
-| ⏱ | Don't repeat yourself. Single responsibility principle. |
-| 🔗 | **Validation** provides pipes available right out-of-the-box with [class-validator](https://github.com/typestack/class-validator) to enforce validation rules for all incoming client payloads |
+| ✨ | **KISS principle** make everything as simple as possible, but not simpler |
+| 📱 | **Mobile friendly** supporting Cross-origin resource sharing (CORS) with a list of domains for restricted resources |
+| 🔑 | **Security** using JWT authentication strategy with [Passport](https://docs.nestjs.com/techniques/authentication) and other techniques to increase the security of your applications |
+| 👥 | **Made for Users.** Easily validate permissions for specific routes using [Guards](https://docs.nestjs.com/guards)
+| ⏱ | Don't repeat yourself, Single responsibility principle. |
+| 🔗 | **Validation:** provides pipes available right out-of-the-box with [class-validator](https://github.com/typestack/class-validator) to enforce validation rules for all incoming client payloads |
 | ⚠️ | **Logger** with [Winston](https://github.com/winstonjs/winston) using different levels to track exceptions easily |
 | 🔄 | **Migrations** using [TypeORM](https://github.com/typeorm/typeorm) to apply incremental updates to the database |
 
