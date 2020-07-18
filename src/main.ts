@@ -12,7 +12,7 @@ import { PROD_ENV } from './constants'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: process.env.NODE_ENV === PROD_ENV ? createLogger() : ['error', 'warn']
+    logger: process.env.NODE_ENV === PROD_ENV ? createLogger() : ['error', 'warn', 'debug']
   })
 
   // BASIC CONFIGURATION
