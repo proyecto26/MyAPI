@@ -109,6 +109,9 @@ export class User implements IUser {
 
   @UpdateDateColumn({ type: 'timestamp without time zone' })
   updateDate: Date
+  
+  @Column('int')
+  roleId!: number
 
   @ApiProperty({ description: 'Role associated with the user' })
   @ManyToOne(() => Role, role => role.users)
