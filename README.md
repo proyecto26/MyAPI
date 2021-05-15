@@ -62,6 +62,11 @@ $ yarn test:e2e
 $ yarn test:cov
 ```
 
+## TypeORM
+* [Relations](https://github.com/typeorm/typeorm/blob/master/docs/relations.md)
+* [Find Options](https://github.com/typeorm/typeorm/blob/master/docs/select-query-builder.md)
+* [Query Builder](https://github.com/typeorm/typeorm/blob/master/docs/select-query-builder.md)
+
 ## Credits 👍
 * **typescript-starter:** [Nest framework TypeScript starter repository](https://github.com/nestjs/typescript-starter).
 
