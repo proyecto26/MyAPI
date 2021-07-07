@@ -85,7 +85,7 @@ export class UserService {
     queryRunner: QueryRunner = this.repository.queryRunner
   ): Promise<void> {
     const currentDate = new Date().toISOString()
-    const newUser = this.preloadUser(user)
+    const newUser = this.preloadUser(user as User)
     const parameters = [
       newUser.id,
       newUser.email,
@@ -126,7 +126,7 @@ export class UserService {
 
   async updateUser(user: IUser): Promise<User> {
     const updateDate = new Date().toISOString()
-    const newUser = this.preloadUser(user)
+    const newUser = this.preloadUser(user as User)
     await this.repository.query(
       `UPDATE ${PUBLIC_TABLES.USER}
       SET "email" = $2,
@@ -155,7 +155,7 @@ export class UserService {
         updateDate
       ]
     )
-    return newUser
+    return newUser as unknown as User
   }
 
   deleteByDocument(document: string): Promise<void> {

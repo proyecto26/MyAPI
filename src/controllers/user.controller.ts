@@ -39,7 +39,7 @@ import { isEmpty } from 'lodash'
 
 import { ERRORS, POSTGRES } from '../constants'
 import { UserService } from '../repositories'
-import { User, UserPasswords } from '../models/user'
+import { IUser, User, UserPasswords } from '../models/user'
 import { DefaultRole, Role } from '../models/role'
 import { AuthPayload } from '../models/auth'
 import { encryptPassword, RolesGuard, Roles }  from '../auth'
@@ -99,7 +99,7 @@ export class UserController {
       offset,
       limit
     )
-    return users
+    return users as User[]
   }
 
   @ApiOperation({ summary: 'Get the info of the current user' })
