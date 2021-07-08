@@ -99,7 +99,7 @@ export class UserController {
       offset,
       limit
     )
-    return users
+    return users as Array<User>
   }
 
   @ApiOperation({ summary: 'Get the info of the current user' })
@@ -112,7 +112,7 @@ export class UserController {
   async getProfile(
     @Request() req: { user: AuthPayload }
   ): Promise<User> {
-    return this.userService.findByDocument(req.user.sub)
+    return this.userService.findOne(req.user.sub)
   }
 
   @ApiOperation({ summary: 'Get the info of a user by document' })
@@ -124,12 +124,12 @@ export class UserController {
   })
   @UseGuards(RolesGuard)
   @Roles(DefaultRole.Admin)
-  @Get(':document')
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findByDocument(
-    @Param('document') document: string
+  async findOne(
+    @Param('id') id: string
   ): Promise<User> {
-    const user = await this.userService.findByDocument(document)
+    const user = await this.userService.findOne(id)
     if (user) {
       return user
     } else {
@@ -150,7 +150,7 @@ export class UserController {
     @Body() user: User
   ): Promise<void> {
     try {
-      user.role = new Role(DefaultRole.User)
+      user.role = new Role({ id: DefaultRole.User })
       await this.userService.addUser(user)
     } catch (error) {
       /**

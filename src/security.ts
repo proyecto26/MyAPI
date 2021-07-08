@@ -2,9 +2,11 @@ import { INestApplication } from '@nestjs/common'
 import * as helmet from 'helmet'
 import * as rateLimit from 'express-rate-limit'
 // import * as csurf from 'csurf'
+import { DOMAIN } from './constants'
 
 const allowedOrigins = [
   // WEBSITES
+  DOMAIN,
   'http://localhost',
   // MOBILE APPS
   'capacitor://localhost',

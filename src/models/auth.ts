@@ -56,3 +56,12 @@ export class AuthLogin {
   })
   readonly password: string
 }
+
+export class AuthUser {
+  @ApiProperty({
+    description: 'User id',
+    type: String
+  })
+  @IsNotEmpty()
+  id: string
+}

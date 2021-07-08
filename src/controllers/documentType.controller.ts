@@ -44,7 +44,7 @@ export class DocumentTypeController {
   @ApiOkResponse({ description: 'List of document types', isArray: true, type: DocumentType })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAllAnonymous(): Promise<DocumentType[]> {
+  async findAll(): Promise<DocumentType[]> {
     return this.documentTypeService.getAll()
   }
 

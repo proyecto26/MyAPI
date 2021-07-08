@@ -17,12 +17,12 @@ export class AuthService {
   ) {}
 
   async validateUser(document: string, password: string): Promise<User> {
-    const user = await this.userService.findByDocument(document)
+    const user = await this.userService.findOne(document)
     if (!user) return null
     else if (!isEmpty(user.password)) {
       const matchPassword = await comparePassword(password, user.password)
       if (matchPassword) {
-        user.role = await this.roleService.findById(user.role.id)
+        user.role = await this.roleService.findById(user.roleId)
         delete user.password
         return user
       }
@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async getAccessToken(user: User): Promise<AuthToken> {
-    const role = get(user, 'role.id')
+    const role = get(user, 'role.id', user.roleId)
     const payload: AuthPayload = { sub: user.id, role }
     return {
       access_token: this.jwtService.sign(payload),
