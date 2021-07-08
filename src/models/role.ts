@@ -7,8 +7,8 @@ import { User } from './user'
 @Entity({ schema: 'public' })
 export class Role {
 
-  constructor(id?: number) {
-    this.id = id
+  constructor(partial?: Partial<Role>) {
+    Object.assign(this, partial);
   }
 
   @ApiProperty({ description: 'Id of the role', required: false })

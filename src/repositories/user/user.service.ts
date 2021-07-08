@@ -18,8 +18,8 @@ export class UserService {
   preloadUser(user: User) {
     user.role = stringToJSON(user.role)
     user.documentType = stringToJSON(user.documentType)
-    const roleId = get(user, 'role.id', user['roleId']) as string
-    const documentTypeId = get(user, 'documentType.id', user['documentTypeId']) as string
+    const roleId = get(user, 'role.id', user['roleId']) as number
+    const documentTypeId = get(user, 'documentType.id', user['documentTypeId']) as number
     return {
       ...trimStringProps(user),
       roleId,
@@ -40,11 +40,8 @@ export class UserService {
     limit: number
   ): Promise<IUser[]> {
     return this.repository.query(
-      `SELECT u.*,
-        row_to_json(r) as "role",
-        row_to_json(dt) as "documentType"
+      `SELECT u.*
       FROM ${PUBLIC_TABLES.USER} u
-      LEFT OUTER JOIN document_type dt ON u."documentTypeId" = dt.id
       LEFT OUTER JOIN role r ON u."roleId" = r.id
       WHERE u."roleId" IN (${roles.toString()}) AND (
         LOWER(u."id") LIKE LOWER($1)
@@ -65,19 +62,10 @@ export class UserService {
     return rawData[0]
   }
 
-  async findByDocument(document: string): Promise<User> {
-    const rawData = await this.repository.query(
-      `SELECT
-          u.*,
-          row_to_json(r) as role,
-          row_to_json(dt) as "documentType"
-        FROM ${PUBLIC_TABLES.USER} u
-        LEFT OUTER JOIN role r ON u."roleId" = r.id
-        LEFT OUTER JOIN document_type dt ON u."documentTypeId" = dt.id
-        WHERE u.id=$1;`,
-      [ document ]
-    )
-    return rawData?.[0]
+  async findOne(id: string): Promise<User> {
+    return this.repository.findOne(id, {
+      relations: ['role', 'documentType']
+    })
   }
 
   async addUser(
@@ -85,7 +73,7 @@ export class UserService {
     queryRunner: QueryRunner = this.repository.queryRunner
   ): Promise<void> {
     const currentDate = new Date().toISOString()
-    const newUser = this.preloadUser(user)
+    const newUser = this.preloadUser(user as User)
     const parameters = [
       newUser.id,
       newUser.email,
@@ -126,7 +114,7 @@ export class UserService {
 
   async updateUser(user: IUser): Promise<User> {
     const updateDate = new Date().toISOString()
-    const newUser = this.preloadUser(user)
+    const newUser = this.preloadUser(user as User)
     await this.repository.query(
       `UPDATE ${PUBLIC_TABLES.USER}
       SET "email" = $2,

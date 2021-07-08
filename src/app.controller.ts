@@ -1,19 +1,19 @@
 import { Controller, Get, Render, HttpCode, HttpStatus } from '@nestjs/common'
-import { ApiExcludeEndpoint, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiServiceUnavailableResponse } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiBadRequestResponse,
+  ApiServiceUnavailableResponse
+} from '@nestjs/swagger'
 import { AppService } from './app.service'
 
+@ApiTags('API')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  @Render('home')
-  @ApiExcludeEndpoint()
-  getHome(): any {
-    return {
-      message: this.appService.getHello()
-    }
-  }
 
   @ApiOperation({ summary: 'Check API status' })
   @ApiOkResponse({ description: 'The service is operating correctly' })
@@ -24,4 +24,13 @@ export class AppController {
   @Get('api/help')
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   getHelp(): void {}
+
+  @Get()
+  @Render('home')
+  @ApiExcludeEndpoint()
+  getHome(): { message: string } {
+    return {
+      message: this.appService.getHello()
+    }
+  }
 }

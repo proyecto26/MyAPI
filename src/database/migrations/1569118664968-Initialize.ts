@@ -4,10 +4,10 @@ import {
   MigrationInterface
 } from 'typeorm'
 
+import { encryptPassword } from '../../auth'
 import { UserStatus, User } from '../../models/user'
 import { DefaultRole, Role } from '../../models/role'
 import { DefaultDocumentType, DocumentType } from '../../models/documentType'
-import { encryptPassword } from '../../auth'
 import {
   PUBLIC_TABLES,
   COLUMN_TYPES,
@@ -30,7 +30,8 @@ export class Initialize1569118664968 implements MigrationInterface {
           name: 'id',
           type: COLUMN_TYPES.INT,
           isPrimary: true,
-          isGenerated: true
+          isGenerated: true,
+          generationStrategy: 'increment'
         },
         { name: 'name', type: COLUMN_TYPES.VARCHAR, length: '50' }
       ]
@@ -43,7 +44,8 @@ export class Initialize1569118664968 implements MigrationInterface {
           name: 'id',
           type: COLUMN_TYPES.INT,
           isPrimary: true,
-          isGenerated: true
+          isGenerated: true,
+          generationStrategy: 'increment'
         },
         { name: 'name', type: COLUMN_TYPES.VARCHAR, length: '50' }
       ]
@@ -78,38 +80,39 @@ export class Initialize1569118664968 implements MigrationInterface {
     console.log('************** INSERT DEFAULT DATA **************')
 
     // INSERT DATA
-    const userRole = new Role(DefaultRole.User)
+    const userRole = new Role({ id: DefaultRole.User })
     userRole.name = 'User'
     await queryRunner.manager.save(userRole)
 
-    const adminRole = new Role(DefaultRole.Admin)
+    const adminRole = new Role({ id: DefaultRole.Admin })
     adminRole.name = 'Admin'
     await queryRunner.manager.save(adminRole)
 
-    const citizenshipCardDocumentType = new DocumentType(DefaultDocumentType.CitizenshipCard)
+    const citizenshipCardDocumentType = new DocumentType({ id: DefaultDocumentType.CitizenshipCard })
     citizenshipCardDocumentType.name = 'Citizenship card'
     await queryRunner.manager.save(citizenshipCardDocumentType)
 
-    const passportDocumentType = new DocumentType(DefaultDocumentType.Passport)
+    const passportDocumentType = new DocumentType({ id: DefaultDocumentType.Passport })
     passportDocumentType.name = 'Passport'
-    console.log(await queryRunner.manager.save(passportDocumentType))
 
     const encryptedPassword = await encryptPassword('1111')
     const currentdate = new Date()
-    const user = new User('1234')
-    user.password = encryptedPassword
-    user.email = 'jdnichollsc@hotmail.com'
-    user.firstName = 'Juan David'
-    user.lastName = 'Nicholls Cardona'
-    user.address = 'XXX XX XX'
-    user.phoneNumber = 'XXX-XX-XX'
-    user.birthdate = currentdate.toISOString()
-    user.documentType = passportDocumentType
-    user.role = adminRole
-    user.termsAndConditions = true
-    user.status = UserStatus.Active
-    user.createDate = currentdate
-    user.updateDate = currentdate
+    const user = new User({
+      id: '1234',
+      password: encryptedPassword,
+      email: 'jdnichollsc@hotmail.com',
+      firstName: 'Juan David',
+      lastName: 'Nicholls Cardona',
+      address: 'Calle de la Perla, 13',
+      phoneNumber: '+34 958 888 888',
+      birthdate: currentdate,
+      documentType: passportDocumentType,
+      role: adminRole,
+      status: UserStatus.Active,
+      termsAndConditions: true,
+      createDate: currentdate,
+      updateDate: currentdate
+    })
     await queryRunner.manager.save(user)
   }
 

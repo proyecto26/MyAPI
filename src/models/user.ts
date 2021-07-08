@@ -5,7 +5,8 @@ import {
   ManyToOne,
   PrimaryColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinTable
 } from 'typeorm'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty } from 'class-validator'
@@ -32,8 +33,8 @@ export interface IUser {
 
 @Entity({ schema: 'public' })
 export class User implements IUser {
-  constructor (id?: string) {
-    this.id = id
+  constructor(partial?: Partial<User>) {
+    Object.assign(this, partial);
   }
 
   /**
@@ -47,14 +48,14 @@ export class User implements IUser {
   id: string
 
   @ApiProperty({ description: 'First name' })
-  @Column('varchar', { length: 50, name: 'firstName' })
+  @Column({ type: 'varchar', length: 50, name: 'firstName' })
   @IsNotEmpty({
     message: 'First name is required'
   })
   firstName: string
 
   @ApiProperty({ description: 'Last name' })
-  @Column('varchar', { length: 50, name: 'lastName' })
+  @Column({ type: 'varchar', length: 50, name: 'lastName' })
   @IsNotEmpty({
     message: 'Last name is required'
   })
@@ -65,17 +66,14 @@ export class User implements IUser {
   @IsNotEmpty({
     message: 'Date of birth is required'
   })
-  birthdate?: string
+  birthdate?: Date
 
   @ApiProperty({ description: 'Address' })
-  @Column('varchar', { length: 50, nullable: true })
-  @IsNotEmpty({
-    message: 'Address is required'
-  })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   address?: string
 
   @ApiProperty({ description: 'Email' })
-  @Column('varchar', { length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   @Index('IDX_USER_EMAIL', { unique: true })
   @IsEmail(null, {
     message: 'The email is not valid'
@@ -90,7 +88,7 @@ export class User implements IUser {
   password?: string
 
   @ApiProperty({ description: 'Phone number' })
-  @Column('varchar', { length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   phoneNumber?: string
 
   @ApiProperty({ description: 'Authorize terms and conditions' })
@@ -110,18 +108,24 @@ export class User implements IUser {
   @UpdateDateColumn({ type: 'timestamp without time zone' })
   updateDate: Date
   
-  @Column('int')
+  @Column()
   roleId!: number
 
   @ApiProperty({ description: 'Role associated with the user' })
-  @ManyToOne(() => Role, role => role.users)
+  @ManyToOne(() => Role, role => role.users, {
+    cascade: true
+  })
+  @JoinTable()
   role: Role
 
   @ApiProperty({ description: 'Document type associated with the user' })
   @IsNotEmpty({
     message: 'The type of document is required'
   })
-  @ManyToOne(() => DocumentType, documentType => documentType.users)
+  @ManyToOne(() => DocumentType, documentType => documentType.users, {
+    cascade: true
+  })
+  @JoinTable()
   documentType: DocumentType
 }
 

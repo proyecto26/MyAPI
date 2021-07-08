@@ -7,8 +7,8 @@ import { User } from './user'
 @Entity({ name: 'document_type', schema: 'public' })
 export class DocumentType {
 
-  constructor(id?: number) {
-    this.id = id
+  constructor(partial: Partial<DocumentType>) {
+    Object.assign(this, partial);
   }
 
   @ApiProperty({ description: 'Id of the document type', required: false })
