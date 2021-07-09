@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
 
 export const PROD_ENV = 'production'
-export const DOMAIN = 'https://my-production-api.domain'
+export const DOMAIN = 'https://myapi-template.herokuapp.com'
 
 export const AUTH_SECRET_TOKEN = 'my_secret_token';
 export const AUTH_JWT_OPTIONS: jwt.SignOptions = {
