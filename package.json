@@ -22,7 +22,8 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/database/ormconfig.ts",
     "migration": "yarn typeorm migration:run",
     "migration:create": "yarn typeorm migration:create -n",
-    "migration:revert": "yarn typeorm migration:revert"
+    "migration:revert": "yarn typeorm migration:revert",
+    "heroku": "npx nest build & yarn start:prod"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
