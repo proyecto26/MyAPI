@@ -25,7 +25,9 @@ const connectionOptions: ConnectionOptions = {
   username: config.user || 'postgres',
   password: config.password || 'postgres',
   database: config.database || 'my_database',
-  ssl: true,
+  ssl: process.env.NODE_ENV === PROD_ENV
+    ? { rejectUnauthorized: false }
+    : false,
   entities: [
     join(__dirname, '../models/*{.ts,.js}'),
   ],
