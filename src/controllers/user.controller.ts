@@ -115,7 +115,7 @@ export class UserController {
     return this.userService.findOne(req.user.sub)
   }
 
-  @ApiOperation({ summary: 'Get the info of a user by document' })
+  @ApiOperation({ summary: 'Get the info of a user' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @ApiOkResponse({
@@ -200,13 +200,13 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'You do not have the necessary role to perform this action' })
   @UseGuards(RolesGuard)
   @Roles(DefaultRole.Admin)
-  @Delete(':document')
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async delete(
-    @Param('document') document: string
+    @Param('id') id: string
   ): Promise<void> {
     try {
-      await this.userService.deleteByDocument(document)
+      await this.userService.deleteById(id)
     } catch (error) {
       this.logger.error(error.message, 'DELETE_USER')
       throw new BadRequestException(error.message)

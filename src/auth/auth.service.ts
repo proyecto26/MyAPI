@@ -16,8 +16,8 @@ export class AuthService {
     private readonly roleService: RoleService
   ) {}
 
-  async validateUser(document: string, password: string): Promise<User> {
-    const user = await this.userService.findOne(document)
+  async validateUser(id: string, password: string): Promise<User> {
+    const user = await this.userService.findOne(id)
     if (!user) return null
     else if (!isEmpty(user.password)) {
       const matchPassword = await comparePassword(password, user.password)

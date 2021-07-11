@@ -146,15 +146,15 @@ export class UserService {
     return newUser
   }
 
-  deleteByDocument(document: string): Promise<void> {
+  deleteById(id: string): Promise<void> {
     return this.repository.query(
       `DELETE FROM ${PUBLIC_TABLES.USER} WHERE id = $1;`,
-      [ document ]
+      [ id ]
     )
   }
 
   async updatePassword(
-    document: string,
+    id: string,
     newPassword: string
   ): Promise<void> {
     const updateDate = new Date().toISOString()
@@ -163,7 +163,7 @@ export class UserService {
       SET "password" = $2,
         "updateDate" = $3
       WHERE id = $1;`, [
-        document,
+        id,
         newPassword,
         updateDate
       ]

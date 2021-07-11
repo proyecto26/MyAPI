@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsEnum, Length, IsNumberString } from 'class-validator'
+import { IsNotEmpty, IsEnum, Length } from 'class-validator'
 
 import { DefaultRole } from './role'
 
@@ -30,17 +30,14 @@ export class AuthToken {
 
 export class AuthLogin {
   @ApiProperty({
-    description: 'Document is required',
+    description: 'Username is required',
     type: String,
     required: true
   })
-  @IsNumberString(null, {
-    message: 'Document must be a number'
-  })
   @IsNotEmpty({
-    message: 'Document is required'
+    message: 'Username is required'
   })
-  readonly document: string
+  readonly username: string
 
   @ApiProperty({
     description: 'Password is required',

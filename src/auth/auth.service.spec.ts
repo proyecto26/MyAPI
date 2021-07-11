@@ -35,12 +35,12 @@ describe('AuthService', () => {
   })
 
   it('should validate user', async () => {
-    const document = '123'
+    const id = '123'
     const password = '111'
 
-    await service.validateUser(document, password).catch(() => null)
+    await service.validateUser(id, password).catch(() => null)
     
-    expect(userService.findOne).toBeCalledWith(document)
+    expect(userService.findOne).toBeCalledWith(id)
   })
 
   it('should get access token', async () => {

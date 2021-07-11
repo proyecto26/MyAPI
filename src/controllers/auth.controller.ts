@@ -41,7 +41,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Authenticate user' })
   @ApiBody({ description: 'User credentials', type: AuthLogin })
   @ApiOkResponse({ description: 'Authentication token', type: AuthToken })
-  @ApiUnauthorizedResponse({ description: 'The document or password entered are not valid' })
+  @ApiUnauthorizedResponse({ description: 'The username or password entered are not valid' })
   @UseGuards(AuthGuard('local'))
   @Post()
   @HttpCode(HttpStatus.OK)
