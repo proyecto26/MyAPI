@@ -18,7 +18,7 @@
 
 ## Demo 🎮
 
-Do you want to see this web component in action? Visit https://myapi-template.herokuapp.com/apiAPI for MercadoPago Checkout yay! 🎉
+Do you want to see this template in action? Visit https://myapi-template.herokuapp.com/apiAPI for MercadoPago Checkout yay! 🎉
 - API for MercadoPago Checkout: https://github.com/proyecto26/mercadopago-api
 
 ## Installation 📚
