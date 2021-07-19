@@ -16,6 +16,11 @@
 | ⚠️ | **Logger** with [Winston](https://github.com/winstonjs/winston) using different levels to track exceptions easily |
 | 🔄 | **Migrations** using [TypeORM](https://github.com/typeorm/typeorm) to apply incremental updates to the database |
 
+## Demo 🎮
+
+Do you want to see this web component in action? Visit https://myapi-template.herokuapp.com/apiAPI for MercadoPago Checkout yay! 🎉
+- API for MercadoPago Checkout: https://github.com/proyecto26/mercadopago-api
+
 ## Installation 📚
 
 ```bash
