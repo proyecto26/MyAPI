@@ -80,20 +80,17 @@ export class Initialize1569118664968 implements MigrationInterface {
     console.log('************** INSERT DEFAULT DATA **************')
 
     // INSERT DATA
-    const userRole = new Role({ id: DefaultRole.User })
-    userRole.name = 'User'
+    const userRole = new Role({ id: DefaultRole.User, name: 'User' })
     await queryRunner.manager.save(userRole)
 
-    const adminRole = new Role({ id: DefaultRole.Admin })
-    adminRole.name = 'Admin'
+    const adminRole = new Role({ id: DefaultRole.Admin, name: 'Admin' })
     await queryRunner.manager.save(adminRole)
 
-    const citizenshipCardDocumentType = new DocumentType({ id: DefaultDocumentType.CitizenshipCard })
-    citizenshipCardDocumentType.name = 'Citizenship card'
+    const citizenshipCardDocumentType = new DocumentType({ id: DefaultDocumentType.CitizenshipCard, name: 'Citizenship card' })
     await queryRunner.manager.save(citizenshipCardDocumentType)
 
-    const passportDocumentType = new DocumentType({ id: DefaultDocumentType.Passport })
-    passportDocumentType.name = 'Passport'
+    const passportDocumentType = new DocumentType({ id: DefaultDocumentType.Passport, name: 'Passport' })
+    await queryRunner.manager.save(passportDocumentType)
 
     const encryptedPassword = await encryptPassword('1111')
     const currentdate = new Date()
