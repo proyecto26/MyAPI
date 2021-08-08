@@ -21,6 +21,23 @@
 Do you want to see this template in action? Visit https://myapi-template.herokuapp.com/api yay! 🎉
 - API for MercadoPago Checkout: https://github.com/proyecto26/mercadopago-api
 
+## Options (Database Type) 💻
+
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/proyecto26/MyAPI/tree/master">
+        <img src="img/database.svg" alt="SQL Database" width="300">
+      </a>
+    </td>
+    <td>
+      <a href="https://github.com/proyecto26/MyApp/tree/nosql">
+        <img src="img/mongodb.svg" alt="NoSQL Database" width="300">
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## Installation 📚
 
 ```bash
