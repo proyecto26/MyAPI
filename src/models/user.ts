@@ -75,7 +75,7 @@ export class User implements IUser {
   @ApiProperty({ description: 'Email' })
   @Column({ type: 'varchar', length: 50 })
   @Index('IDX_USER_EMAIL', { unique: true })
-  @IsEmail(null, {
+  @IsEmail({}, {
     message: 'The email is not valid'
   })
   @IsNotEmpty({
