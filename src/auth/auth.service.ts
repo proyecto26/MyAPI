@@ -22,7 +22,7 @@ export class AuthService {
     else if (!isEmpty(user.password)) {
       const matchPassword = await comparePassword(password, user.password)
       if (matchPassword) {
-        user.role = await this.roleService.findById(user.roleId)
+        user.role = await this.roleService.findOne(user.role.id)
         delete user.password
         return user
       }
@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async getAccessToken(user: User): Promise<AuthToken> {
-    const role = get(user, 'role.id', user.roleId)
+    const role = user.role.id
     const payload: AuthPayload = { sub: user.id, role }
     return {
       access_token: this.jwtService.sign(payload),

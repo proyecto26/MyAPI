@@ -37,12 +37,13 @@ import { Request as RequestBody } from 'express'
 import { AuthGuard } from '@nestjs/passport'
 import { isEmpty } from 'lodash'
 
-import { ERRORS, POSTGRES } from '../constants'
+import { ERRORS, DATABASE } from '../constants'
 import { UserService } from '../repositories'
-import { User, UserPasswords } from '../models/user'
-import { DefaultRole, Role } from '../models/role'
+import { IUser, User, UserPasswords } from '../models/user'
+import { DefaultRole } from '../models/role'
 import { AuthPayload } from '../models/auth'
 import { encryptPassword, RolesGuard, Roles }  from '../auth'
+import { userRole } from '../database/seeders/role/data'
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -147,17 +148,17 @@ export class UserController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async addUser(
-    @Body() user: User
+    @Body() user: IUser
   ): Promise<void> {
     try {
-      user.role = new Role({ id: DefaultRole.User })
+      user.role = userRole
       await this.userService.addUser(user)
     } catch (error) {
       /**
        * Validate database exceptions
        */
       switch(error.code) {
-        case POSTGRES.UNIQUE_VIOLATION:
+        case DATABASE.UNIQUE_VIOLATION:
           throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
         default:
           this.logger.error(error.message, 'ADD_USER')
@@ -176,7 +177,7 @@ export class UserController {
   @Put()
   @HttpCode(HttpStatus.OK)
   async updateUser(
-    @Body() user: User
+    @Body() user: IUser
   ): Promise<void> {
     try {
       await this.userService.updateUser(user)
@@ -185,7 +186,7 @@ export class UserController {
        * Validate database exceptions
        */
       switch(error.code) {
-        case POSTGRES.UNIQUE_VIOLATION:
+        case DATABASE.UNIQUE_VIOLATION:
           throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
         default:
           this.logger.error(error.message, 'UPDATE_USER')
@@ -256,7 +257,7 @@ export class UserController {
        * Validate database exceptions
        */
       switch(error.code) {
-        case POSTGRES.UNIQUE_VIOLATION:
+        case DATABASE.UNIQUE_VIOLATION:
           throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
         default:
           this.logger.error(error.message, 'ADD_USERS')

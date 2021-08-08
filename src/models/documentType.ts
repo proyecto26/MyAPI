@@ -1,10 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
 import { IsNotEmpty } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
-import { User } from './user'
-
-@Entity({ name: 'document_type', schema: 'public' })
+@Schema()
 export class DocumentType {
 
   constructor(partial: Partial<DocumentType>) {
@@ -12,21 +11,21 @@ export class DocumentType {
   }
 
   @ApiProperty({ description: 'Id of the document type', required: false })
-  @PrimaryGeneratedColumn()
+  @Prop({ required: true, unique: true })
   id: number
 
   @ApiProperty({ description: 'Name of the document type' })
   @IsNotEmpty({
     message: 'The name is required'
   })
-  @Column({ length: 50, type: 'varchar' })
+  @Prop({ required: true, trim: true })
   name: string
-
-  @OneToMany(() => User, (user: User) => user.documentType)
-  users: User[]
 }
 
 export enum DefaultDocumentType {
   CitizenshipCard = 1,
   Passport = 2
 }
+
+export type DocumentTypeDocument = DocumentType & Document
+export const DocumentTypeSchema = SchemaFactory.createForClass(DocumentType)

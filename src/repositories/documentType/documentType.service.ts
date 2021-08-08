@@ -1,49 +1,34 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { Repository } from 'typeorm'
+import { Model } from 'mongoose'
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
 
-import { DocumentType } from '../../models/documentType'
-import { REPOSITORIES } from '../../constants'
-import { PUBLIC_TABLES } from '../../database'
+import { DocumentType, DocumentTypeDocument } from '../../models/documentType'
 
 @Injectable()
 export class DocumentTypeService {
   constructor(
-    @Inject(REPOSITORIES.DOCUMENT_TYPE)
-    private readonly repository: Repository<DocumentType>,
+    @InjectModel(DocumentType.name)
+    private readonly documentTypeModel: Model<DocumentTypeDocument>
   ) { }
 
-  async getAll(): Promise<DocumentType[]> {
-    return await this.repository.query(
-      `SELECT * FROM ${PUBLIC_TABLES.DOCUMENT_TYPE};`
-    )
+  async findAll(): Promise<DocumentType[]> {
+    return await this.documentTypeModel.find().exec()
   }
 
-  insert(documentType: DocumentType): Promise<void> {
-    return this.repository.query(
-      `INSERT INTO ${PUBLIC_TABLES.DOCUMENT_TYPE} ("name")
-      VALUES ($1);`,
-      [ documentType.name ]
-    )
+  async findOne(id: number): Promise<DocumentType> {
+    return this.documentTypeModel.findOne({ id }).exec()
   }
 
-  upsert(documentType: DocumentType): Promise<void> {
-    return this.repository.query(
-      `INSERT INTO ${PUBLIC_TABLES.DOCUMENT_TYPE} ("id", "name") 
-      VALUES ($1, $2) 
-      ON CONFLICT("id")
-      DO UPDATE
-      SET name=EXCLUDED.name
-      RETURNING id;`, [
-        documentType.id,
-        documentType.name
-      ]
-    )
+  async addDocumentType(documentType: DocumentType): Promise<DocumentType> {
+    const createdDocumentType = new this.documentTypeModel(documentType)
+    return createdDocumentType.save()
+  }
+
+  async update(documentType: DocumentType): Promise<void> {
+    await this.documentTypeModel.findOneAndUpdate({ id: documentType.id }, documentType).exec()
   }
 
   async delete(documentTypeId: number): Promise<void> {
-    await this.repository.query(
-      `DELETE FROM ${PUBLIC_TABLES.DOCUMENT_TYPE} WHERE id = $1;`,
-      [ documentTypeId ]
-    )
+    await this.documentTypeModel.deleteOne({ id: documentTypeId }).exec()
   }
 }

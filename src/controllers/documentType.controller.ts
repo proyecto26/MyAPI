@@ -45,7 +45,7 @@ export class DocumentTypeController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<DocumentType[]> {
-    return this.documentTypeService.getAll()
+    return this.documentTypeService.findAll()
   }
 
   @ApiBearerAuth()
@@ -61,7 +61,7 @@ export class DocumentTypeController {
     @Body() documentType: DocumentType,
   ): Promise<void> {
     try {
-      await this.documentTypeService.insert(documentType)
+      await this.documentTypeService.addDocumentType(documentType)
     } catch (error) {
       switch (error.code) {
         default:
@@ -84,7 +84,7 @@ export class DocumentTypeController {
     @Body() documentType: DocumentType,
   ): Promise<void> {
     try {
-      return this.documentTypeService.upsert(documentType)
+      return this.documentTypeService.update(documentType)
     } catch (error) {
       switch (error.code) {
         default:

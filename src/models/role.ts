@@ -1,10 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty } from 'class-validator'
 
-import { User } from './user'
-
-@Entity({ schema: 'public' })
+@Schema()
 export class Role {
 
   constructor(partial?: Partial<Role>) {
@@ -12,21 +11,21 @@ export class Role {
   }
 
   @ApiProperty({ description: 'Id of the role', required: false })
-  @PrimaryGeneratedColumn()
+  @Prop({ required: true, unique: true })
   id: number
 
   @ApiProperty({ description: 'Name of the role' })
   @IsNotEmpty({
     message: 'The name is required'
   })
-  @Column({ length: 50, type: 'varchar' })
+  @Prop({ required: true, trim: true })
   name: string
-
-  @OneToMany(() => User, (user: User) => user.role)
-  users: User[]
 }
 
 export enum DefaultRole {
   User = 1,
   Admin = 2
 }
+
+export type RoleDocument = Role & Document
+export const RoleSchema = SchemaFactory.createForClass(Role)

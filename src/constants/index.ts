@@ -8,12 +8,8 @@ export const AUTH_JWT_OPTIONS: jwt.SignOptions = {
   expiresIn: '1d'
 };
 
+export const DATABASE_URI = 'mongodb://localhost'
 export const DATABASE_CONNECTION = 'DATABASE_CONNECTION'
-export const REPOSITORIES = {
-  USER: 'USER_REPOSITORY',
-  ROLE: 'ROLE_REPOSITORY',
-  DOCUMENT_TYPE: 'DOCUMENT_TYPE'
-}
 
 export { default as ERRORS } from './errors'
-export * as POSTGRES from './postgres'
+export * as DATABASE from './database'

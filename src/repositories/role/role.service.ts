@@ -1,52 +1,34 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { Repository } from 'typeorm'
-import { get } from 'lodash'
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
 
-import { Role } from '../../models/role'
-import { REPOSITORIES } from '../../constants'
-import { PUBLIC_TABLES } from '../../database'
+import { Role, RoleDocument } from '../../models/role'
 
 @Injectable()
 export class RoleService {
   constructor(
-    @Inject(REPOSITORIES.ROLE)
-    private readonly repository: Repository<Role>
+    @InjectModel(Role.name)
+    private readonly roleModel: Model<RoleDocument>
   ) { }
 
   async findAll(): Promise<Role[]> {
-    return await this.repository.query(
-      `SELECT * FROM ${PUBLIC_TABLES.ROLE}`
-    )
+    return await this.roleModel.find().exec()
   }
 
-  async findById(id: number): Promise<Role> {
-    const rawData = await this.repository.query(
-      `SELECT * FROM ${PUBLIC_TABLES.ROLE} WHERE id=$1`,
-      [ id ]
-    )
-    return rawData[0]
+  async findOne(id: number): Promise<Role> {
+    return this.roleModel.findOne({ id }).exec()
   }
 
-  async addRole(role: Role): Promise<void> {
-    const rawData = await this.repository.query(`SELECT nextval('role_id_seq')`)
-    role.id = get(rawData, '0.nextval', role.id)
-    await this.repository.query(
-      `INSERT INTO ${PUBLIC_TABLES.ROLE} ("id", "name") VALUES ($1, $2)`,
-      [ role.id, role.name ]
-    )
+  async addRole(role: Role): Promise<Role> {
+    const createdRole = new this.roleModel(role)
+    return createdRole.save()
   }
 
   async updateRole(role: Role): Promise<void> {
-    await this.repository.query(
-      `UPDATE ${PUBLIC_TABLES.ROLE} SET name = $2 WHERE id = $1`,
-      [ role.id, role.name ]
-    )
+    await this.roleModel.findOneAndUpdate({ id: role.id }, role).exec()
   }
 
   async delete(roleId: number): Promise<void> {
-    await this.repository.query(
-      `DELETE FROM ${PUBLIC_TABLES.ROLE} WHERE id = $1`,
-      [ roleId ]
-    )
+    await this.roleModel.deleteOne({ id: roleId }).exec()
   }
 }

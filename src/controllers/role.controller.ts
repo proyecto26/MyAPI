@@ -28,7 +28,7 @@ import {
   ApiForbiddenResponse
 } from '@nestjs/swagger'
 
-import { ERRORS, POSTGRES } from '../constants'
+import { ERRORS, DATABASE } from '../constants'
 import { RoleService } from '../repositories'
 import { Role, DefaultRole } from '../models/role'
 import { Roles, RolesGuard } from '../auth'
@@ -71,7 +71,7 @@ export class RoleController {
        * Validate database exceptions
        */
       switch(error.code) {
-        case POSTGRES.UNIQUE_VIOLATION:
+        case DATABASE.UNIQUE_VIOLATION:
           throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
         default:
           this.logger.error(error.message, 'ADD_ROLE')
@@ -97,7 +97,7 @@ export class RoleController {
        * Validate database exceptions
        */
       switch(error.code) {
-        case POSTGRES.UNIQUE_VIOLATION:
+        case DATABASE.UNIQUE_VIOLATION:
           throw new BadRequestException(ERRORS.UNIQUE_VIOLATION)
         default:
           this.logger.error(error.message, 'UPDATE_ROLE')

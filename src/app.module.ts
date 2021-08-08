@@ -1,6 +1,7 @@
 import { Logger, Module, HttpModule } from '@nestjs/common'
 
 import { AuthModule } from './auth'
+import { DatabaseModule } from './database'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 
@@ -20,6 +21,7 @@ import {
   imports: [
     HttpModule,
     AuthModule,
+    DatabaseModule,
     UserModule,
     RoleModule,
     DocumentTypeModule

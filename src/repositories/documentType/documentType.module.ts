@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common'
+import { MongooseModule } from '@nestjs/mongoose'
 
-import { DatabaseModule } from '../../database'
-import { documentTypeProviders } from './documentType.providers'
+import { DocumentType, DocumentTypeSchema } from '../../models/documentType'
 import { DocumentTypeService } from './documentType.service'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    MongooseModule.forFeature([{ name: DocumentType.name, schema: DocumentTypeSchema }])
+  ],
   providers: [
-    ...documentTypeProviders,
     DocumentTypeService,
   ],
   exports: [DocumentTypeService]

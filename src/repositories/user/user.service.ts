@@ -1,36 +1,26 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { Repository, QueryRunner } from 'typeorm'
-import { get } from 'lodash'
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
 
-import { User, IUser } from '../../models/user'
-import { REPOSITORIES } from '../../constants'
-import { PUBLIC_TABLES } from '../../database'
-import { getParamValues, trimStringProps, stringToJSON } from '../utils'
+import { User, IUser, UserDocument } from '../../models/user'
+import { stringToJSON } from '../utils'
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(REPOSITORIES.USER)
-    private readonly repository: Repository<User>
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>
   ) { }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   preloadUser(user: User) {
     user.role = stringToJSON(user.role)
     user.documentType = stringToJSON(user.documentType)
-    const roleId = get(user, 'role.id', user['roleId']) as number
-    const documentTypeId = get(user, 'documentType.id', user['documentTypeId']) as number
-    return {
-      ...trimStringProps(user),
-      roleId,
-      documentTypeId
-    }
+    return user
   }
 
   async findAll(): Promise<User[]> {
-    return await this.repository.query(
-      `SELECT * FROM ${PUBLIC_TABLES.USER};`
-    )
+    return await this.userModel.find().exec()
   }
 
   async findByRoleIds(
@@ -39,161 +29,66 @@ export class UserService {
     offset: number,
     limit: number
   ): Promise<IUser[]> {
-    return this.repository.query(
-      `SELECT u.*
-      FROM ${PUBLIC_TABLES.USER} u
-      LEFT OUTER JOIN role r ON u."roleId" = r.id
-      WHERE u."roleId" IN (${roles.toString()}) AND (
-        LOWER(u."id") LIKE LOWER($1)
-        OR LOWER(u."email") LIKE LOWER($1)
-        OR LOWER(u."firstName") LIKE LOWER($1)
-        OR LOWER(u."lastName") LIKE LOWER($1)
-      )
-      LIMIT $2 OFFSET $3;`,
-      [`%${search}%`, limit, offset]
-    )
+    const searchString = new RegExp(search, 'ig')
+    return this.userModel.aggregate()
+    .project({
+        fullname: { $concat: ['$firstName', ' ', '$lastName'] },
+        reversedname: { $concat: ['$lastName', ' ', '$firstName'] },
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        phone: 1,
+        address: 1,
+        role: 1
+    })
+    .match({
+      'role.id': { $in: roles },
+      $or: [
+        { fullname: searchString },
+        { reversedname: searchString },
+        { email: searchString },
+        { phone: searchString },
+        { address: searchString }
+      ]
+    })
+    .skip(offset).limit(limit).exec()
   }
 
   async findByEmail(email: string): Promise<User> {
-    const rawData = await this.repository.query(
-      `SELECT * FROM ${PUBLIC_TABLES.USER} WHERE email = $1;`,
-      [ email ]
-    )
-    return rawData[0]
+    return this.userModel.findOne({ email }).exec()
   }
 
   async findOne(id: string): Promise<User> {
-    return this.repository.findOne(id, {
-      relations: ['role', 'documentType']
-    })
+    return this.userModel.findOne({ id }).exec()
   }
 
-  async addUser(
-    user: IUser,
-    queryRunner: QueryRunner = this.repository.queryRunner
-  ): Promise<void> {
-    const currentDate = new Date().toISOString()
+  async addUser(user: IUser): Promise<User> {
     const newUser = this.preloadUser(user as User)
-    const parameters = [
-      newUser.id,
-      newUser.email,
-      newUser.firstName,
-      newUser.lastName,
-      newUser.password,
-      newUser.roleId,
-      newUser.documentTypeId,
-      newUser.birthdate,
-      newUser.address,
-      newUser.phoneNumber,
-      newUser.termsAndConditions,
-      newUser.status,
-      currentDate,
-      currentDate
-    ]
-    await queryRunner.query(
-      `INSERT INTO ${PUBLIC_TABLES.USER} (
-        "id",
-        "email",
-        "firstName",
-        "lastName",
-        "password",
-        "roleId",
-        "documentTypeId",
-        "birthdate",
-        "address",
-        "phoneNumber",
-        "termsAndConditions",
-        "status",
-        "createDate",
-        "updateDate"
-      )
-      VALUES (${getParamValues(parameters.length)});`,
-      parameters
-    )
+    const createdUser = new this.userModel(newUser)
+    return createdUser.save()
   }
 
   async updateUser(user: IUser): Promise<User> {
-    const updateDate = new Date().toISOString()
     const newUser = this.preloadUser(user as User)
-    await this.repository.query(
-      `UPDATE ${PUBLIC_TABLES.USER}
-      SET "email" = $2,
-        "firstName" = $3,
-        "lastName" = $4,
-        "roleId" = $5,
-        "documentTypeId" = $6,
-        "birthdate" = $7,
-        "address" = $8,
-        "phoneNumber" = $9,
-        "termsAndConditions" = $10,
-        "status" = $11,
-        "updateDate" = $12
-      WHERE id = $1;`, [
-        newUser.id,
-        newUser.email,
-        newUser.firstName,
-        newUser.lastName,
-        newUser.roleId,
-        newUser.documentTypeId,
-        newUser.birthdate,
-        newUser.address,
-        newUser.phoneNumber,
-        newUser.termsAndConditions,
-        newUser.status,
-        updateDate
-      ]
-    )
-    return newUser
+    return await this.userModel.findOneAndUpdate({ id: user.id }, newUser).exec()
   }
 
-  deleteById(id: string): Promise<void> {
-    return this.repository.query(
-      `DELETE FROM ${PUBLIC_TABLES.USER} WHERE id = $1;`,
-      [ id ]
-    )
+  async deleteById(id: string): Promise<void> {
+    await this.userModel.deleteOne({ id }).exec()
   }
 
   async updatePassword(
     id: string,
     newPassword: string
   ): Promise<void> {
-    const updateDate = new Date().toISOString()
-    await this.repository.query(
-      `UPDATE ${PUBLIC_TABLES.USER}
-      SET "password" = $2,
-        "updateDate" = $3
-      WHERE id = $1;`, [
-        id,
-        newPassword,
-        updateDate
-      ]
-    )
+    await this.userModel.findByIdAndUpdate(id, { $set: { password: newPassword } }).exec()
   }
 
   async countByDocumentTypeId(documentTypeId: number = null): Promise<number> {
-    const rawData = await this.repository.query(
-      `SELECT COUNT(*) AS count
-      FROM ${PUBLIC_TABLES.USER}
-      WHERE "documentTypeId" = $1;`,
-      [documentTypeId]
-    )
-    return Number(rawData[0].count)
+    return this.userModel.countDocuments({ 'document.id': documentTypeId }).exec()
   }
 
   async addUsers(users: IUser[]): Promise<void> {
-    const queryRunner = this.repository.manager.connection.createQueryRunner()
-    await queryRunner.connect()
-    await queryRunner.startTransaction()
-    try {
-      for (const user of users) {
-        await this.addUser(user, queryRunner)
-      }
-      await queryRunner.commitTransaction()
-    } catch (error) {
-      await queryRunner.rollbackTransaction()
-      throw error
-    } finally {
-      await queryRunner.release()
-    }
+    await this.userModel.insertMany(users.map(this.preloadUser.bind(this)))
   }
 }

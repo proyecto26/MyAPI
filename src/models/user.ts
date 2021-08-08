@@ -1,18 +1,10 @@
-import {
-  Entity,
-  Index,
-  Column,
-  ManyToOne,
-  PrimaryColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  JoinTable
-} from 'typeorm'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEmail, IsNotEmpty } from 'class-validator'
 
-import { Role } from './role'
-import { DocumentType } from './documentType'
+import { Role, RoleSchema } from './role'
+import { DocumentType, DocumentTypeSchema } from './documentType'
 
 export enum UserStatus {
   Inactive = 'INACTIVE',
@@ -27,11 +19,11 @@ export interface IUser {
   documentType: DocumentType
   email: string
   role: Role
-  createDate: Date
-  updateDate: Date
+  createDate?: Date
+  updateDate?: Date
 }
 
-@Entity({ schema: 'public' })
+@Schema()
 export class User implements IUser {
   constructor(partial?: Partial<User>) {
     Object.assign(this, partial);
@@ -41,41 +33,40 @@ export class User implements IUser {
    * User's document
    */
   @ApiProperty({ description: 'Document of the user' })
-  @PrimaryColumn('text')
+  @Prop({ required: true, unique: true, index : true })
   @IsNotEmpty({
     message: 'Identification number is required'
   })
   id: string
 
   @ApiProperty({ description: 'First name' })
-  @Column({ type: 'varchar', length: 50, name: 'firstName' })
+  @Prop({ required: true, trim: true })
   @IsNotEmpty({
     message: 'First name is required'
   })
   firstName: string
 
   @ApiProperty({ description: 'Last name' })
-  @Column({ type: 'varchar', length: 50, name: 'lastName' })
+  @Prop({ required: true, trim: true })
   @IsNotEmpty({
     message: 'Last name is required'
   })
   lastName: string
 
   @ApiProperty({ description: 'Birthday' })
-  @Column({ type: 'timestamp without time zone' })
+  @Prop()
   @IsNotEmpty({
     message: 'Date of birth is required'
   })
   birthdate?: Date
 
   @ApiProperty({ description: 'Address' })
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Prop({ trim: true })
   address?: string
 
   @ApiProperty({ description: 'Email' })
-  @Column({ type: 'varchar', length: 50 })
-  @Index('IDX_USER_EMAIL', { unique: true })
-  @IsEmail(null, {
+  @Prop({ required: true, trim: true, unique: true, isEmail: true })
+  @IsEmail({}, {
     message: 'The email is not valid'
   })
   @IsNotEmpty({
@@ -84,48 +75,39 @@ export class User implements IUser {
   email: string
 
   @ApiProperty({ description: 'Password' })
-  @Column('text', { nullable: true })
+  @Prop()
   password?: string
 
   @ApiProperty({ description: 'Phone number' })
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Prop()
   phoneNumber?: string
 
   @ApiProperty({ description: 'Authorize terms and conditions' })
-  @Column('boolean', { default: false })
+  @Prop({ default: false })
   termsAndConditions?: boolean
 
   @ApiProperty({ description: 'Status' })
-  @Column('text', { default: UserStatus.Inactive })
+  @Prop({ required: true, default: UserStatus.Inactive, enum: [UserStatus.Active, UserStatus.Inactive] })
   @IsNotEmpty({
     message: 'The user status is required'
   })
   status: UserStatus
 
-  @CreateDateColumn({ type: 'timestamp without time zone' })
+  @Prop({ default: Date.now })
   createDate: Date
 
-  @UpdateDateColumn({ type: 'timestamp without time zone' })
+  @Prop({ default: Date.now })
   updateDate: Date
-  
-  @Column()
-  roleId!: number
 
   @ApiProperty({ description: 'Role associated with the user' })
-  @ManyToOne(() => Role, role => role.users, {
-    cascade: true
-  })
-  @JoinTable()
+  @Prop({ type: RoleSchema })
   role: Role
 
   @ApiProperty({ description: 'Document type associated with the user' })
   @IsNotEmpty({
     message: 'The type of document is required'
   })
-  @ManyToOne(() => DocumentType, documentType => documentType.users, {
-    cascade: true
-  })
-  @JoinTable()
+  @Prop({ type: DocumentTypeSchema })
   documentType: DocumentType
 }
 
@@ -142,3 +124,6 @@ export class UserPasswords {
   })
   repeatPassword: string
 }
+
+export type UserDocument = User & Document
+export const UserSchema = SchemaFactory.createForClass(User)
