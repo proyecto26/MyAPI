@@ -16,6 +16,23 @@
 | ⚠️ | **Logger** with [Winston](https://github.com/winstonjs/winston) using different levels to track exceptions easily |
 | 🔄 | **Migrations** using [TypeORM](https://github.com/typeorm/typeorm) to apply incremental updates to the database |
 
+## Options (Database Type) 💻
+
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/proyecto26/MyAPI/tree/nosql">
+        <img src="img/mongodb.svg" alt="NoSQL Database" width="300">
+      </a>
+    </td>
+    <td>
+      <a href="https://github.com/proyecto26/MyAPI/tree/master">
+        <img src="img/database.svg" alt="SQL Database" width="300">
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## Installation 📚
 
 ```bash
