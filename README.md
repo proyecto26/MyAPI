@@ -31,7 +31,7 @@ Do you want to see this template in action? Visit https://myapi-template.herokua
       </a>
     </td>
     <td>
-      <a href="https://github.com/proyecto26/MyApp/tree/nosql">
+      <a href="https://github.com/proyecto26/MyAPI/tree/nosql">
         <img src="img/mongodb.svg" alt="NoSQL Database" width="300">
       </a>
     </td>
