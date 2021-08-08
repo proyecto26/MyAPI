@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { get, isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { User } from '../models/user'
 import { AuthToken, AuthPayload } from '../models/auth'
