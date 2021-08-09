@@ -27,7 +27,7 @@ Do you want to see this template in action? Visit https://myapi-template.herokua
   <tr>
     <td>
       <a href="https://github.com/proyecto26/MyAPI/tree/master">
-        <img src="img/database.svg" alt="SQL Database" width="300">
+        <img src="img/sql.svg" alt="SQL Database" width="300">
       </a>
     </td>
     <td>
