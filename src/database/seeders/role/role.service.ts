@@ -28,7 +28,7 @@ export class RoleSeederService {
     return Promise.all(roles.map(async (role) => {
       return await this.roleService.findOne(role.id)
         .then(dbRole => {
-          // We check if a language already exists.
+          // We check if a role already exists.
           // If it does don't create a new one.
           if (dbRole) {
             return Promise.resolve(null)
