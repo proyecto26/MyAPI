@@ -14,7 +14,7 @@
 | ⏱ | Don't repeat yourself, Single responsibility principle. |
 | 🔗 | **Validation:** provides pipes available right out-of-the-box with [class-validator](https://github.com/typestack/class-validator) to enforce validation rules for all incoming client payloads |
 | ⚠️ | **Logger** with [Winston](https://github.com/winstonjs/winston) using different levels to track exceptions easily |
-| 🔄 | **Migrations** using [TypeORM](https://github.com/typeorm/typeorm) to apply incremental updates to the database |
+| 🔄 | **Database seeding** using [Mongoose](https://github.com/nestjs/mongoose) to provide an initial set of data to the database |
 
 ## Options (Database Type) 💻
 
