@@ -53,17 +53,11 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
-## Running migrations ▶
+## Running Database seeding ▶
 
 ```bash
-# run migration
-$ yarn migration
-
-# create migration
-$ yarn migration:create
-
-# revert migration
-$ yarn migration:revert
+# run seed
+$ yarn seed
 ```
 
 ## Test 🕵️
