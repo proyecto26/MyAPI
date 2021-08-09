@@ -28,7 +28,7 @@ export class DocumentTypeSeederService {
     return Promise.all(documentTypes.map(async (documentType) => {
       return await this.documentTypeService.findOne(documentType.id)
         .then(dbDocumentType => {
-          // We check if a language already exists.
+          // We check if a document type already exists.
           // If it does don't create a new one.
           if (dbDocumentType) {
             return Promise.resolve(null)
