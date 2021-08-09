@@ -28,7 +28,7 @@ export class UserSeederService {
     return Promise.all(users.map(async (user) => {
       return await this.userService.findOne(user.id)
         .then(dbUser => {
-          // We check if a language already exists.
+          // We check if a user already exists.
           // If it does don't create a new one.
           if (dbUser) {
             return Promise.resolve(null)
