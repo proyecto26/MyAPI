@@ -3,7 +3,7 @@ import { DocumentType } from '../../../models/documentType';
 import { DocumentTypeService } from '../../../repositories';
 import loadDocumentTypes from './data';
 /**
- * Service dealing with role based operations.
+ * Service dealing with documentType based operations.
  *
  * @class
  */
