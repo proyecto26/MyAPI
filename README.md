@@ -2,7 +2,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-|   | MyApi Template |
+|   | MyApi NoSQL Template |
 | - | ------------ |
 | ⚡️ | **Launch your api instantly** watching changes with live-reload |
 | 📈 | **Highly scalable** using [Repository design pattern](https://docs.nestjs.com/techniques/database#repository-pattern) to access the database even easier |
