@@ -84,10 +84,15 @@ $ yarn test:e2e
 $ yarn test:cov
 ```
 
-## TypeORM
+## TypeORM 📖
 * [Relations](https://github.com/typeorm/typeorm/blob/master/docs/relations.md)
 * [Find Options](https://github.com/typeorm/typeorm/blob/master/docs/select-query-builder.md)
 * [Query Builder](https://github.com/typeorm/typeorm/blob/master/docs/select-query-builder.md)
+
+## Resources 📚
+
+- [Implementing Microservices](https://frontegg.com/blog/implementing-microservices-in-nodejs)
+- [A microservice that handles the queue of sending emails](https://pietrzakadrian.com/blog/how-to-create-a-microservice-that-handles-the-queue-of-sending-emails-in-nestjs)
 
 ## Credits 👍
 * **typescript-starter:** [Nest framework TypeScript starter repository](https://github.com/nestjs/typescript-starter).
