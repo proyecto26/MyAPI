@@ -93,6 +93,7 @@ $ yarn test:cov
 
 - [Implementing Microservices](https://frontegg.com/blog/implementing-microservices-in-nodejs)
 - [A microservice that handles the queue of sending emails](https://pietrzakadrian.com/blog/how-to-create-a-microservice-that-handles-the-queue-of-sending-emails-in-nestjs)
+- [Testing with NestJS like a Pro](https://dev.to/jdnichollsc/testing-with-nestjs-like-a-pro-3i2b)
 
 ## Credits 👍
 * **typescript-starter:** [Nest framework TypeScript starter repository](https://github.com/nestjs/typescript-starter).
